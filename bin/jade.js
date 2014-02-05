@@ -46,7 +46,7 @@ program.on('--help', function(){
   console.log('    $ jade < my.jade > my.html');
   console.log('');
   console.log('    # jade over stdio');
-  console.log('    $ echo "h1 Jade!" | jade');
+  console.log('    $ echo \'h1 Jade!\' | jade');
   console.log('');
   console.log('    # foo, bar dirs rendering to /tmp');
   console.log('    $ jade foo bar --out /tmp ');
@@ -56,9 +56,6 @@ program.on('--help', function(){
 program.parse(process.argv);
 
 // options given, parse them
-
-if (!program.args || program.args.length === 0)
-  program.help();
 
 if (program.obj) {
   if (exists(program.obj)) {
@@ -131,6 +128,13 @@ function stdin() {
     }
     process.stdout.write(output);
   }).resume();
+
+  process.on('SIGINT', function() {
+    process.stdout.write('\n');
+    process.stdin.emit('end');
+    process.stdout.write('\n');
+    process.exit();
+  })
 }
 
 /**
